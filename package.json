@@ -1,5 +1,5 @@
 {
-  "name": "@topologyhealth/smarterfhir",
+  "name": "@johnbendi/smarterfhir",
   "version": "0.4.1",
   "description": "Library for simplifying all things FHIR and SMART",
   "main": "lib/cjs/index.js",
@@ -55,5 +55,16 @@
   },
   "peerDependencies": {
     "fhirclient": "^2.5.2"
-  }
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnbendi/SMARTerFHIR.git"
+  },
+  "bugs": {
+    "url": "https://github.com/johnbendi/SMARTerFHIR/issues"
+  },
+  "homepage": "https://github.com/johnbendi/SMARTerFHIR#readme"
 }
