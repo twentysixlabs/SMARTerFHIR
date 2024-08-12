@@ -15,46 +15,30 @@ export enum EMR {
   NONE = "none",
 }
 
-/**
- * The function `instanceOfEmr` checks if an object is an instance of the EMR enum.
- * @param {unknown} object - The `object` parameter is of type `unknown`, which means it can be any type.
- * @returns a boolean value.
- */
 export function instanceOfEmr(object: unknown): object is EMR {
   return Object.values(EMR).includes(object as string as EMR);
 }
 
-/**
- * Represents the SmartLaunchHandler class.
- */
 export default class SmartLaunchHandler {
-  /**
-   * The client ID for the SmartLaunchHandler.
-   * @readonly
-   */
   readonly clientID: string;
-
   readonly clientSecret?: string;
+  private emrType: EMR;
 
-  /**
-   * Creates an instance of SmartLaunchHandler.
-   * @param {string} clientID - The client ID to use for authorization.
-   */
-  constructor(clientID: string, clientSecret?: string) {
+  constructor(clientID: string, clientSecret?: string, emrType?: EMR) {
     this.clientID = clientID;
     this.clientSecret = clientSecret;
+    this.emrType = emrType ?? EMR.NONE; // Default to EMR.NONE if not provided
   }
 
   /**
-   * Launches an EMR application.
-   * @param {string} clientId - The client ID to use for authorization.
-   * @param {string} redirect - The redirect URI to use for authorization.
-   * @param {string} iss - The issuer for authorization.
-   * @param {LAUNCH} launchType - The type of launch.
-   * @returns {Promise<string | void>} - A promise resolving to the authorization response or void.
+   * Explicitly sets the EMR type.
+   * @param {EMR} emrType - The EMR type to set.
    */
+  setEMRType(emrType: EMR) {
+    this.emrType = emrType;
+  }
+
   private async launchEMR(
-    emrType: EMR,
     redirect: string,
     iss: string,
     launchType: LAUNCH
@@ -64,10 +48,10 @@ export default class SmartLaunchHandler {
     }
 
     const defaultScopes = ["openid", "fhirUser"];
-    const emrSpecificScopes = getEmrSpecificScopes(emrType, launchType);
+    const emrSpecificScopes = getEmrSpecificScopes(this.emrType, launchType);
     const scope = [...defaultScopes, ...emrSpecificScopes].join(" ");
     const emrSpecificAuthorizeParams: Partial<fhirclient.AuthorizeParams> =
-      getEMRSpecificAuthorizeParams(emrType);
+      getEMRSpecificAuthorizeParams(this.emrType);
     const redirect_uri = redirect ?? "";
 
     const authorizeParams = {
@@ -81,10 +65,6 @@ export default class SmartLaunchHandler {
     return FHIR.oauth2.authorize(authorizeParams);
   }
 
-  /**
-   * Authorizes the EMR based on the current URL query parameters.
-   * @returns {Promise<void>} - A promise resolving to void.
-   */
   async authorizeEMR(launchType: LAUNCH = LAUNCH.EMR, redirectPath?: string) {
     if (launchType === LAUNCH.BACKEND) {
       throw new Error(`Direct Backend Authorization not supported yet.`);
@@ -93,11 +73,6 @@ export default class SmartLaunchHandler {
     }
   }
 
-  /**
-   * The function `executeWebLaunch` checks the URL parameters for an "iss" value, determines the EMR type based on the "iss" value, and then launches the
-   * corresponding EMR system.
-   * @returns nothing (undefined).
-   */
   private async executeWebLaunch(launchType: LAUNCH, redirectPath?: string) {
     const queryString = window.location.search;
     const origin = window.location.origin;
@@ -110,22 +85,25 @@ export default class SmartLaunchHandler {
         : "");
     const urlParams = new URLSearchParams(queryString);
     const iss = urlParams.get("iss") ?? undefined;
-    if (!iss)
+
+    if (!iss) {
       throw new Error(
         "Iss Search parameter must be provided as part of EMR Web Launch"
       );
-    const emrType = SmartLaunchHandler.getEMRType(iss);
-    if (emrType === EMR.NONE || !emrType)
+    }
+
+    // If the EMR type has not been explicitly set, try to determine it
+    if (this.emrType === EMR.NONE) {
+      this.emrType = SmartLaunchHandler.getEMRType(iss);
+    }
+
+    if (this.emrType === EMR.NONE || !this.emrType) {
       throw new Error("EMR type cannot be inferred from the ISS");
-    await this.launchEMR(emrType, redirect, iss, launchType);
+    }
+
+    await this.launchEMR(redirect, iss, launchType);
   }
 
-  /**
-   * The function `getEMRType` takes a string `iss` and returns the corresponding EMR type based on whether the string includes any of the EMR types.
-   * @param {string} iss - The `iss` parameter is a string that represents the issuer of an Electronic Medical Record (EMR).
-   * @returns the EMR type that matches the input string `iss`. If a matching EMR type is found, it is returned. If no matching EMR type is found, the function
-   * returns `EMR.NONE`.
-   */
   static getEMRType(iss?: string): EMR {
     if (iss) {
       const isEMROfType = (emrType: EMR) => iss.includes(emrType);
@@ -135,10 +113,11 @@ export default class SmartLaunchHandler {
     const emrType = (
       process.env.REACT_APP_EMR_TYPE as string
     ).toLowerCase() as EMR;
-    if (!emrType)
+    if (!emrType) {
       throw new Error(
         "EMR type cannot be inferred. You must provide the emrType explicitly as an env variable"
       );
+    }
     return emrType;
   }
 }
@@ -171,8 +150,6 @@ function getEmrSpecificScopes(emrType: EMR, launchType: LAUNCH): string[] {
         "user/*.*",
         "profile",
         "email",
-        "openid",
-        "fhirUser",
         "offline_access",
       ];
     case EMR.EPIC:
