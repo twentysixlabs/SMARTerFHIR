@@ -49,7 +49,7 @@ export default class ClientFactory {
    */
   async createEMRClient(
     launchType: LAUNCH.EMR | LAUNCH.STANDALONE,
-    emrType: EMR
+    emrType?: EMR
   ): Promise<BaseClient> {
     const fhirClient = await this.createDefaultFhirClient(launchType);
     return await this.createSmarterFhirClient(fhirClient, emrType);
@@ -77,7 +77,7 @@ export default class ClientFactory {
     return this.createSmarterFhirClient(fhirClient, EMR.NONE);
   }
 
-  private async createSmarterFhirClient(fhirClient: SubClient, emrType: EMR) {
+  private async createSmarterFhirClient(fhirClient: SubClient, emrType?: EMR) {
     const _emrType = emrType ?? ClientUtils.getEMRType(fhirClient);
     switch (_emrType) {
       case EMR.EPIC:
