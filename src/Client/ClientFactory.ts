@@ -48,10 +48,11 @@ export default class ClientFactory {
    * @returns a Promise that resolves to an instance of the `BaseClient` class.
    */
   async createEMRClient(
-    launchType: LAUNCH.EMR | LAUNCH.STANDALONE
+    launchType: LAUNCH.EMR | LAUNCH.STANDALONE,
+    emrType: EMR
   ): Promise<BaseClient> {
     const fhirClient = await this.createDefaultFhirClient(launchType);
-    return await this.createSmarterFhirClient(fhirClient);
+    return await this.createSmarterFhirClient(fhirClient, emrType);
   }
 
   /**
@@ -73,12 +74,12 @@ export default class ClientFactory {
       tokenUri: serverConfig.tokenUri,
     });
 
-    return this.createSmarterFhirClient(fhirClient);
+    return this.createSmarterFhirClient(fhirClient, EMR.NONE);
   }
 
-  private async createSmarterFhirClient(fhirClient: SubClient) {
-    const emrType = ClientUtils.getEMRType(fhirClient);
-    switch (emrType) {
+  private async createSmarterFhirClient(fhirClient: SubClient, emrType: EMR) {
+    const _emrType = emrType ?? ClientUtils.getEMRType(fhirClient);
+    switch (_emrType) {
       case EMR.EPIC:
         return new EpicClient(fhirClient);
       case EMR.CERNER:

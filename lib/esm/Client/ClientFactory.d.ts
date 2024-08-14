@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { IncomingMessage, ServerResponse } from "http";
+import { EMR } from "../Launcher/SmartLaunchHandler";
 import { FhirClientConfig } from "../types";
 import BaseClient from "./BaseClient";
 export declare enum LAUNCH {
@@ -32,7 +33,7 @@ export default class ClientFactory {
      * of `LAUNCH.EMR`.
      * @returns a Promise that resolves to an instance of the `BaseClient` class.
      */
-    createEMRClient(launchType: LAUNCH.EMR | LAUNCH.STANDALONE): Promise<BaseClient>;
+    createEMRClient(launchType: LAUNCH.EMR | LAUNCH.STANDALONE, emrType: EMR): Promise<BaseClient>;
     /**
      * The function `createEMRClientBackend` creates an EMR client based on the specified launch type.
      * @param {IncomingMessage} req - The `req` parameter is an incoming message object that represents the request made by the client.
