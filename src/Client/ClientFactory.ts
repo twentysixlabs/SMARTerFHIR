@@ -1,3 +1,4 @@
+import { fhirclient } from "fhirclient/lib/types";
 import smart, * as FHIR from "fhirclient";
 import { IncomingMessage, ServerResponse } from "http";
 import { ClientUtils } from "..";
@@ -16,6 +17,7 @@ export enum LAUNCH {
   EMR,
   STANDALONE,
   BACKEND,
+  STATEFUL,
 }
 
 /**
@@ -49,9 +51,10 @@ export default class ClientFactory {
    */
   async createEMRClient(
     launchType: LAUNCH.EMR | LAUNCH.STANDALONE,
-    emrType?: EMR
+    emrType?: EMR,
+    state?: string | fhirclient.ClientState
   ): Promise<BaseClient> {
-    const fhirClient = await this.createDefaultFhirClient(launchType);
+    const fhirClient = await this.createDefaultFhirClient(launchType, state);
     return await this.createSmarterFhirClient(fhirClient, emrType);
   }
 
@@ -105,12 +108,19 @@ export default class ClientFactory {
    * @returns a Promise that resolves to a SubClient object.
    */
   private async createDefaultFhirClient(
-    launchType: LAUNCH
+    launchType: LAUNCH,
+    state?: string | fhirclient.ClientState
   ): Promise<SubClient> {
     switch (launchType) {
       case LAUNCH.EMR:
       case LAUNCH.STANDALONE:
         return FHIR.oauth2.ready();
+      case LAUNCH.STATEFUL:
+        if (!state)
+          throw new Error(
+            "state parameter is required when using the STATEFUL launch type"
+          );
+        return FHIR.oauth2.client(state);
       default:
         throw new Error("Unsupported provider for standalone launch");
     }

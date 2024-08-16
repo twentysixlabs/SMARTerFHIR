@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import { fhirclient } from "fhirclient/lib/types";
 import { IncomingMessage, ServerResponse } from "http";
 import { EMR } from "../Launcher/SmartLaunchHandler";
 import { FhirClientConfig } from "../types";
@@ -6,7 +7,8 @@ import BaseClient from "./BaseClient";
 export declare enum LAUNCH {
     EMR = 0,
     STANDALONE = 1,
-    BACKEND = 2
+    BACKEND = 2,
+    STATEFUL = 3
 }
 /**
  * The type represents a JSON Web Token (JWT) with properties for client_id and an optional epic.eci property.
@@ -33,7 +35,7 @@ export default class ClientFactory {
      * of `LAUNCH.EMR`.
      * @returns a Promise that resolves to an instance of the `BaseClient` class.
      */
-    createEMRClient(launchType: LAUNCH.EMR | LAUNCH.STANDALONE, emrType?: EMR): Promise<BaseClient>;
+    createEMRClient(launchType: LAUNCH.EMR | LAUNCH.STANDALONE, emrType?: EMR, state?: string | fhirclient.ClientState): Promise<BaseClient>;
     /**
      * The function `createEMRClientBackend` creates an EMR client based on the specified launch type.
      * @param {IncomingMessage} req - The `req` parameter is an incoming message object that represents the request made by the client.
