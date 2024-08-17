@@ -135,7 +135,7 @@ export default class ClientFactory {
             "state parameter is required when using the STATEFUL launch type"
           );
         }
-        return FHIR.oauth2.client(state);
+        return FHIR.oauth2.init({});
       default:
         throw new Error("Unsupported provider for standalone launch");
     }

@@ -1,6 +1,6 @@
 {
   "name": "@johnbendi/smarterfhir",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "Library for simplifying all things FHIR and SMART",
   "main": "lib/cjs/index.js",
   "types": "lib/esm/index.d.ts",
