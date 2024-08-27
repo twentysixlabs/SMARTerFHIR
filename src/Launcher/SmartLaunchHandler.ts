@@ -152,8 +152,15 @@ function getEmrSpecificScopes(emrType: EMR, launchType: LAUNCH): string[] {
         "email",
         "offline_access",
       ];
-    case EMR.EPIC:
     case EMR.SMART:
+      return [
+        launchType === LAUNCH.STANDALONE ? "launch/patient" : "launch",
+        launchType === LAUNCH.STANDALONE ? "patient/*.*" : "",
+        "user/*.*",
+        "offline_access",
+        "profile",
+      ];
+    case EMR.EPIC:
     default:
       return standardScopes;
   }
