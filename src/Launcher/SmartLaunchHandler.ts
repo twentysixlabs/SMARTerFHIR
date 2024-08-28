@@ -1,5 +1,5 @@
-import * as FHIR from "fhirclient";
-import { fhirclient } from "fhirclient/lib/types";
+import * as FHIR from "@johnbendi/fhirclient";
+import { fhirclient } from "@johnbendi/fhirclient/lib/types";
 import { LAUNCH } from "../Client/ClientFactory";
 import { cerner } from "./Config";
 import scopes from "./scopes.json";
@@ -63,6 +63,7 @@ export default class SmartLaunchHandler {
       ...emrSpecificAuthorizeParams,
     };
     return FHIR.oauth2.authorize(authorizeParams);
+    // return authorize(new BrowserAdapter(), authorizeParams);
   }
 
   async authorizeEMR(launchType: LAUNCH = LAUNCH.EMR, redirectPath?: string) {
