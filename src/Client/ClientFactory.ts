@@ -1,6 +1,6 @@
 /// <reference types="node" />
-import { fhirclient } from "fhirclient/lib/types";
-import smart, * as FHIR from "fhirclient";
+import { fhirclient } from "@johnbendi/fhirclient/lib/types";
+import smart, * as FHIR from "@johnbendi/fhirclient";
 import { IncomingMessage, ServerResponse } from "http";
 import { ClientUtils } from "..";
 import SubClient from "../FhirClient";

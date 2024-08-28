@@ -1,6 +1,6 @@
 {
   "name": "@johnbendi/smarterfhir",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "description": "Library for simplifying all things FHIR and SMART",
   "main": "lib/cjs/index.js",
   "types": "lib/esm/index.d.ts",
@@ -24,7 +24,6 @@
     "ansi-regex": "^5.0.1",
     "buffer": "^6.0.3",
     "fast-xml-parser": ">=4.2.5",
-    "fhirclient": "^2.5.4",
     "json5": ">=1.0.2",
     "process": "^0.11.10",
     "tough-cookie": ">=4.1.3",

@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { fhirclient } from "fhirclient/lib/types";
+import { fhirclient } from "@johnbendi/fhirclient/lib/types";
 import { IncomingMessage, ServerResponse } from "http";
 import { EMR } from "../Launcher/SmartLaunchHandler";
 import { FhirClientConfig } from "../types";
